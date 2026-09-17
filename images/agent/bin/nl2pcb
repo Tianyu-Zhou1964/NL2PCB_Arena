@@ -1,0 +1,24 @@
+#!/bin/sh
+# nl2pcb 命令行包装：源码树在 /opt/nl2pcb-bench。
+# 每次调用追加一行记录到 $NL2PCB_CALL_LOG（默认 /workspace/.arena/verifier_calls.jsonl），
+# grader 用它统计 agent 自检了几次；记录只是指标，评分不依赖它。
+export PYTHONPATH="/opt/nl2pcb-bench/src${PYTHONPATH:+:$PYTHONPATH}"
+log="${NL2PCB_CALL_LOG:-/workspace/.arena/verifier_calls.jsonl}"
+python3 -B -m nl2pcb.cli "$@"
+code=$?
+if mkdir -p "$(dirname "$log")" 2>/dev/null; then
+    python3 - "$code" "$log" "$@" <<'EOF' 2>/dev/null
+import hashlib, json, sys, time
+code, log, *argv = sys.argv[1:]
+answer = next((a for a in argv if a.endswith(".kicad_pcb")), None)
+digest = None
+if answer:
+    try:
+        digest = hashlib.sha256(open(answer, "rb").read()).hexdigest()
+    except OSError:
+        pass
+with open(log, "a", encoding="utf-8") as f:
+    f.write(json.dumps({"t": time.time(), "argv": argv, "exit": int(code), "answer_sha256": digest}) + "\n")
+EOF
+fi
+exit $code

@@ -1,0 +1,4 @@
+#!/bin/sh
+# pcblite 命令行包装：源码树在 /opt/pcblite，纯标准库。
+export PYTHONPATH="/opt/pcblite${PYTHONPATH:+:$PYTHONPATH}"
+exec python3 -B -m pcblite "$@"
