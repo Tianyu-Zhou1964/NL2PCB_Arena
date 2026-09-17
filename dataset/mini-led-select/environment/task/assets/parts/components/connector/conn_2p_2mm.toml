@@ -1,0 +1,13 @@
+id = "conn_2p_2mm"
+kind = "connector"
+virtual = false
+mpn = "440054-2"
+mfr = "TE Connectivity"
+description = "2 位 2.00 mm 立式针座，通孔"
+symbol = "Connector_Generic:Conn_01x02"
+footprint = "Connector_TE-Connectivity:TE_440054-2_1x02_P2.00mm_Vertical"
+assembly = "hand"
+
+[electrical]
+current_max_a = 3.0
+voltage_max_v = 250

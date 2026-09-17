@@ -1,0 +1,31 @@
+# 公开自检配置，由 nl2pcb_arena.export 从评测侧 config 派生：只含公开规则，不含案例。
+schema = "0.1"
+
+[task]
+id = "mini-led-repair-overcurrent"
+reference = "assets/skeleton.kicad_pcb"
+
+[assets]
+parts = [
+    "conn_2p_2mm",
+    "led_0805_red",
+    "res_0805_47",
+    "res_0805_100",
+    "res_0805_330",
+    "res_0805_1k",
+    "res_0805_5k1",
+]
+skeleton = [
+    "J1",
+]
+
+[conditions]
+process = "jlc_fr4_2l_1oz"
+supply = [
+    { ref = "J1", pad = "1", return_pad = "2", voltage_v = 5.0 },
+]
+
+[rules]
+"layout.fixed" = [
+    { same_as = "assets/skeleton.kicad_pcb", tol_mm = 0.01 },
+]

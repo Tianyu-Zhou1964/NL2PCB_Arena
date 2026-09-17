@@ -1,0 +1,12 @@
+id = "led_0805_red"
+kind = "led"
+virtual = true
+description = "红光 LED，0805，正向压降 2.0 V"
+symbol = "Device:LED"
+footprint = "LED_SMD:LED_0805_2012Metric"
+assembly = "reflow"
+
+[electrical]
+vf_v = 2.0
+if_max_a = 0.02
+color = "red"

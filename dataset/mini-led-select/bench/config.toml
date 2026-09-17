@@ -1,0 +1,84 @@
+# mini-led-select：评测侧配置（由 NL2PCB-Bench 的 mini-led 派生，评分器不改）。
+# 案例标注 = 服务器上用完整 mini-led 配置实测的判定 + 物理推理，每条启用规则至少一正一反。
+schema = "0.1"
+
+[task]
+id = "mini-led-select"
+reference = "cases/baseline.kicad_pcb"
+
+[assets]
+parts = [
+    "conn_2p_2mm",
+    "led_0805_red",
+    "res_0805_47",
+    "res_0805_100",
+    "res_0805_330",
+    "res_0805_1k",
+    "res_0805_5k1",
+]
+skeleton = ["J1"]                          # 板框默认保留；再保留 J1。scripts/build_assets 从 task.reference 生成 skeleton.kicad_pcb
+
+[conditions]
+process = "jlc_fr4_2l_1oz"
+
+[[conditions.supply]]                      # 激励：在 J1 加 5 V
+ref = "J1"
+pad = "1"
+return_pad = "2"
+voltage_v = 5.0
+
+[[rules."pcb.drc"]]                       # 选型题不要求布线，DRC 关掉（公开版同样关）
+level = "off"
+reason = "选型题：只要求元件与焊盘网络标注正确，不要求布铜线"
+
+[[rules."layout.fixed"]]                   # 默认 geometry@2 检查 J1 封装、位置、旋转、板面以及板框
+same_as = "assets/skeleton.kicad_pcb"
+tol_mm = 0.01
+
+# 测量 D2 的正向电流：按焊盘标注网络做 .op，不检查铜线实际连通。上限取 led_0805_red 的 if_max_a = 20 mA。
+[[rules."electrical.led.current"]]
+ref = "D2"
+min = 0.0001
+
+[[cases]]
+board = "cases/baseline.kicad_pcb"
+pass = ["layout.fixed", "electrical.led.current"]
+reason = "Bench 原参考板：R1 = 5.1 kΩ，(5 − 2.0) V / 5.1 kΩ ≈ 0.59 mA，在 [0.1 mA, 20 mA] 内；铜线连通、DRC 干净；J1 与板框同骨架。"
+
+[[cases]]
+board = "cases/alternative-layout.kicad_pcb"
+pass = ["layout.fixed", "electrical.led.current"]
+reason = "只移动 D2 并重新布线；网络与阻值不变，J1 与板框不变。"
+
+[[cases]]
+board = "cases/j1-shifted.kicad_pcb"
+pass = ["electrical.led.current"]
+fail = ["layout.fixed"]
+reason = "J1 沿 Y 移 1 mm，超过 0.01 mm 容差；走线跟随移动，DRC 仍干净；电路不变。"
+
+[[cases]]
+board = "cases/outline-changed.kicad_pcb"
+pass = ["electrical.led.current"]
+fail = ["layout.fixed"]
+reason = "板框右边界外扩 0.5 mm；其余不变。"
+
+[[cases]]
+board = "cases/led-open-circuit.kicad_pcb"
+pass = ["layout.fixed", "electrical.led.current"]
+reason = "R1.2–D2.2 之间缺一段走线，DRC 报未连接；电流规则只按焊盘标注网络算，仍为 0.59 mA。"
+
+[[cases]]
+board = "cases/led-open-repaired.kicad_pcb"
+pass = ["layout.fixed", "electrical.led.current"]
+reason = "在开路板上用 pcblite 补上 R1.2–D2.2 的 F.Cu 走线（0.2 mm）并重铺铜；其余同开路板。"
+
+[[cases]]
+board = "cases/r47-overcurrent.kicad_pcb"
+pass = ["layout.fixed"]
+fail = ["electrical.led.current"]
+reason = "baseline 把 R1 改为 47 Ω：(5 − 2.0) V / 47 Ω ≈ 64 mA（ngspice 解得 61.7 mA），超过 LED if_max 20 mA；布线与 DRC 同 baseline。"
+
+[[cases]]
+board = "cases/r330.kicad_pcb"
+pass = ["layout.fixed", "electrical.led.current"]
+reason = "baseline 把 R1 改为 330 Ω：约 9 mA，在范围内。"

@@ -1,0 +1,47 @@
+schema_version = "1.4"
+artifacts = ["/workspace"]
+
+[task]
+name = "nl2pcb/mini-led-select"
+version = "0.1.0"
+description = "5V 单路 LED 电源指示小板：只做选型与网络连接，不要求布线（L1）"
+authors = [{ name = "NL2PCB" }]
+keywords = ["pcb", "kicad", "nl2pcb", "L1"]
+
+[metadata]
+benchmark = "NL2PCB-Arena"
+tier = "L1"
+difficulty = "easy"
+order = 2
+rules_public = ["layout.fixed"]
+rules_hidden = ["electrical.led.current"]
+start_board = ""
+agent_image = "nl2pcb-arena/agent:dev"
+not_implied = ["会布线、铜线连通", "可量产、可靠性", "题面里没有对应规则的要求（工艺、焊接方式）"]
+
+[verifier]
+timeout_sec = 900.0
+env = { NL2PCB_TASK_ID = "mini-led-select" }
+environment_mode = "separate"
+network_mode = "no-network"
+
+[verifier.environment]
+docker_image = "nl2pcb-arena/verifier:dev"
+network_mode = "no-network"
+cpus = 2
+memory_mb = 4096
+
+[agent]
+timeout_sec = 1800.0
+user = "agent"
+
+[environment]
+network_mode = "public"
+build_timeout_sec = 600.0
+workdir = "/workspace"
+cpus = 4
+memory_mb = 8192
+
+[environment.env]
+
+[solution.env]

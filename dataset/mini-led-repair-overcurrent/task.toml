@@ -1,0 +1,47 @@
+schema_version = "1.4"
+artifacts = ["/workspace"]
+
+[task]
+name = "nl2pcb/mini-led-repair-overcurrent"
+version = "0.1.0"
+description = "5V 单路 LED 电源指示小板：起手板过了公开自检，按题面复核并修正（L3）"
+authors = [{ name = "NL2PCB" }]
+keywords = ["pcb", "kicad", "nl2pcb", "L3"]
+
+[metadata]
+benchmark = "NL2PCB-Arena"
+tier = "L3"
+difficulty = "easy"
+order = 4
+rules_public = ["pcb.drc", "layout.fixed"]
+rules_hidden = ["electrical.led.current"]
+start_board = "start.kicad_pcb"
+agent_image = "nl2pcb-arena/agent:dev"
+not_implied = ["从零设计", "会布线（起手板已布好）", "可量产、可靠性", "题面里没有对应规则的要求（工艺、焊接方式）"]
+
+[verifier]
+timeout_sec = 900.0
+env = { NL2PCB_TASK_ID = "mini-led-repair-overcurrent" }
+environment_mode = "separate"
+network_mode = "no-network"
+
+[verifier.environment]
+docker_image = "nl2pcb-arena/verifier:dev"
+network_mode = "no-network"
+cpus = 2
+memory_mb = 4096
+
+[agent]
+timeout_sec = 1800.0
+user = "agent"
+
+[environment]
+network_mode = "public"
+build_timeout_sec = 600.0
+workdir = "/workspace"
+cpus = 4
+memory_mb = 8192
+
+[environment.env]
+
+[solution.env]

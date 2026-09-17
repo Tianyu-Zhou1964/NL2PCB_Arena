@@ -1,0 +1,14 @@
+# 嘉立创普通 FR4 双层板，1 oz 外层铜。数值取自嘉立创公开工艺能力（常规档）。
+id = "jlc_fr4_2l_1oz"
+vendor = "JLCPCB"
+description = "FR4 双层，1 oz 外层铜，绿油，无铅喷锡，铣边"
+layers = 2
+copper_oz = 1
+thickness_mm = 1.6
+min_track_mm = 0.127        # 5 mil
+min_clearance_mm = 0.127    # 5 mil
+min_drill_mm = 0.3
+min_annular_ring_mm = 0.15
+finish = "hasl_lead_free"
+mask = "green"
+edge = "milled"
