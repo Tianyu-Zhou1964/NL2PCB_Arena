@@ -1,0 +1,23 @@
+# vendor 快照由 scripts/sync_vendor.sh 生成，只提交版本记录
+vendor/*
+!vendor/VERSIONS.json
+
+# Harbor 运行产物
+jobs/
+runs/
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+.ruff_cache/
+*.egg-info/
+
+# OS / 编辑器
+.DS_Store
+.idea/
+.vscode/
+
+# 密钥
+.env

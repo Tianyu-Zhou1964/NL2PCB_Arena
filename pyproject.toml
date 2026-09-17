@@ -1,0 +1,27 @@
+[project]
+name = "nl2pcb-arena"
+version = "0.1.0"
+description = "NL2PCB-Bench 的 Harbor 考场：题包导出、判卷镜像、结果汇总"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "tomli-w>=1.2.0",
+]
+
+[project.scripts]
+nl2pcb-arena = "nl2pcb_arena.cli:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/nl2pcb_arena"]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.0",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

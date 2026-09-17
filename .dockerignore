@@ -1,0 +1,9 @@
+# 白名单：只有 verifier 镜像用仓库根做构建上下文，它只需要 dataset/ 与 verifier/。
+# agent 镜像的上下文由 images/build.sh 用 tar 单独拼（vendor/ + images/agent/bin），不经过这里。
+*
+!dataset/
+!dataset/**
+!verifier/
+!verifier/**
+dataset/**/__pycache__
+dataset/**/.DS_Store
