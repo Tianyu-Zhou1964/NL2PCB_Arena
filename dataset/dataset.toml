@@ -1,0 +1,29 @@
+# Dataset manifest for nl2pcb/nl2pcb-arena
+# Add tasks using: harbor add <org>/<name>
+# Publish using: harbor publish
+
+[dataset]
+name = "nl2pcb/nl2pcb-arena"
+version = "1.0.0"
+description = "NL2PCB-Arena: 基模+harness 在 NL2PCB-Bench 题目上的评测（Harbor 数据集）"
+keywords = []
+[[dataset.authors]]
+name = "NL2PCB"
+
+
+[[tasks]]
+name = "nl2pcb/mini-led"
+digest = "sha256:5e57a8eeb98c979effd36c1bf398ea48f9daf03f9e924ff1fd90bacb1004f8ed"
+
+[[tasks]]
+name = "nl2pcb/mini-led-select"
+digest = "sha256:b6bc3bb9aae8ed62ce0a6efed135d5d9eee1f3093ef5d9048f37ae49fc7352c6"
+
+[[tasks]]
+name = "nl2pcb/mini-led-repair-open"
+digest = "sha256:39ee2d5ce9085707f4de836bdeffd55277e7c80a20d1f20c320209ab3c7644d5"
+
+[[tasks]]
+name = "nl2pcb/mini-led-repair-overcurrent"
+digest = "sha256:af95200ecd58013e7e37913be728f99599315606b399db91d37318a1d08ffb87"
+
