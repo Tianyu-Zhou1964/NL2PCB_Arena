@@ -1,0 +1,81 @@
+# mini-led 测试定义。唯一给 check 的输入；check 不读 spec.md。
+# 一条 [[rules."名"]] 就是调一次规则；id / method / level / reason 为调用元信息。
+# 同一规则多次调用时用唯一 id 标注案例；一次调用时可直接使用规则名。
+
+schema = "0.1"                             # 测试定义格式版本，升级不兼容时改
+
+[task]
+id = "mini-led"
+reference = "cases/baseline.kicad_pcb"       # 兼作生成骨架的来源，只存一份 PCB
+
+[assets]                                   # scripts/build_assets.py 读：parts 投影到 assets/ 的范围
+parts = [                                  # 元件白名单；parts.known_value lint 也查这张表
+    "conn_2p_2mm",
+    "led_0805_red",
+    "res_0805_47",
+    "res_0805_100",
+    "res_0805_330",
+    "res_0805_1k",
+    "res_0805_5k1",
+]
+skeleton = ["J1"]                          # 板框默认保留；这里列出还需保留的元件位号。
+                                           # 省略或 [] 都表示仅保留板框，清除网络和答案布线。
+                                           # scripts/build_assets.py 从 task.reference 生成 skeleton.kicad_pcb。
+
+[conditions]
+process = "jlc_fr4_2l_1oz"                 # dfm.* lint 读这个工艺条目
+
+[[conditions.supply]]                      # 激励：在 J1 加 5 V
+ref = "J1"
+pad = "1"
+return_pad = "2"
+voltage_v = 5.0
+
+[[rules."layout.fixed"]]                   # 默认 geometry@2 检查 J1 封装、位置、旋转、板面以及板框
+same_as = "assets/skeleton.kicad_pcb"
+tol_mm = 0.01
+
+# 测量 D2 的正向电流：按焊盘标注网络做 .op，不检查铜线实际连通。
+[[rules."electrical.led.current"]]
+ref = "D2"
+min = 0.0001                               # 下限 0.1 mA；上限省略，取元件的 [electrical].if_max_a
+
+[output]
+help = false
+
+# 整板测试集：每块 PCB 都运行本任务全部已启用规则，再按这些分组逐项比较。
+# 未列出的调用等同 unlabeled，并自动提醒；crashed 始终是测试错误。
+# 已启用 pcb.drc、layout.fixed 和 electrical.led.current。
+# 本批案例已标注布局要求；新接入的 DRC 和 LED 电流预期待专家补充。
+# pass 仅针对列出的验收项，不能解释为整板满足全部自然语言需求。
+# PCB 为专家提供的整板样本；以下标注记录各验收项的预期。
+
+[[cases]]
+board = "cases/baseline.kicad_pcb"
+pass = ["layout.fixed"]
+unlabeled = ["pcb.drc", "electrical.led.current"]
+reason = "原 mini_led.kicad_pcb，作为骨架来源；J1 与从本板提取的骨架一致。"
+
+[[cases]]
+board = "cases/alternative-layout.kicad_pcb"
+pass = ["layout.fixed"]
+unlabeled = ["pcb.drc", "electrical.led.current"]
+reason = "D2 改变位置和方向，J1 的封装、位置、旋转与板面保持不变；其他功能需后续检查确认。"
+
+[[cases]]
+board = "cases/j1-shifted.kicad_pcb"
+fail = ["layout.fixed"]
+unlabeled = ["pcb.drc", "electrical.led.current"]
+reason = "J1 从 baseline 的 (190, 103.4) 移到 (190, 104.4)，Y 方向偏移 1 mm，超过 0.01 mm 位置容差，应检出 J1 位置违规。"
+
+[[cases]]
+board = "cases/outline-changed.kicad_pcb"
+fail = ["layout.fixed"]
+unlabeled = ["pcb.drc", "electrical.led.current"]
+reason = "板框右边界从 195.107367 mm 改为 195.607367 mm，J1 不变；板框固定约束预期违规。"
+
+[[cases]]
+board = "cases/led-open-circuit.kicad_pcb"
+pass = ["layout.fixed"]
+unlabeled = ["pcb.drc", "electrical.led.current"]
+reason = "源文件 led-open.kicad_pcb；D2 移动且支路少一段走线，J1 不变。pcb.drc 检查物理连接，电流方法只读取焊盘标注网络；两项预期仍需专家补充，不能因布局通过判整板合格。"
